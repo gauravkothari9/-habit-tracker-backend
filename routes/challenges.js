@@ -57,7 +57,7 @@ router.delete('/:id', protect, async (req, res) => {
   }
 });
 
-// Toggle challenge completion for today
+// Toggle challenge completion for today or a custom date
 router.post('/:id/toggle', protect, async (req, res) => {
   try {
     const challenge = await Challenge.findOne({ _id: req.params.id, user: req.user._id });
@@ -80,13 +80,13 @@ router.post('/:id/toggle', protect, async (req, res) => {
       return streak;
     };
 
-    const todayKey = toLocalDateKey(new Date());
+    const targetKey = req.body.date || toLocalDateKey(new Date());
     const newMarked = challenge.markedDates || new Map();
 
-    if (newMarked.has(todayKey)) {
-      newMarked.delete(todayKey);
+    if (newMarked.has(targetKey)) {
+      newMarked.delete(targetKey);
     } else {
-      newMarked.set(todayKey, { selected: true });
+      newMarked.set(targetKey, { selected: true });
     }
 
     challenge.markedDates = newMarked;
